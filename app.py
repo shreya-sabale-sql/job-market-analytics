@@ -52,3 +52,25 @@ st.subheader("🧠 Insights")
 st.write("Top Skill:", skills.value_counts().idxmax())
 st.write("Average Salary:", int(filtered["salary"].mean()))
 
+data["date"] = pd.to_datetime(data["date"])
+daily_jobs = data.groupby("date").size().reset_index(name="job_count")
+
+#Chart
+st.subheader("📈 Job Posting Trend Over Time")
+st.line_chart(daily_jobs.set_index("date"))
+
+#salarytrend
+salary_trend = data.groupby("date")["salary"].mean().reset_index()
+st.subheader("💰 Average Salary Trend")
+st.line_chart(salary_trend.set_index("date"))
+
+#skilldemand
+skills = data["skills"].str.split(",").explode()
+skill_counts = skills.value_counts()
+st.subheader("🧠 Most In-Demand Skills")
+st.bar_chart(skill_counts)
+
+#locationdemand
+location_counts = data["location"].value_counts()
+st.subheader("📍 Job Demand by Location")
+st.bar_chart(location_counts)
