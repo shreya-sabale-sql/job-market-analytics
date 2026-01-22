@@ -7,15 +7,11 @@ and visualizes trends using Streamlit.
 ## 🚀 Features
 - Automated job data collection
 - SQL-based data storage
-- Interactive dashboard
 - Daily updates using GitHub Actions
+- Interactive dashboard
 
-## 🛠 Tech Stack
-- Python
-- SQLite
-- Streamlit
-- GitHub Actions
-- APIs
+## ⚙️ Tech Stack
+Python | SQL | Streamlit | GitHub Actions
 
 ## ⚙️ How It Works
 1. Fetches job data from API
@@ -23,10 +19,10 @@ and visualizes trends using Streamlit.
 3. Updates automatically daily
 4. Displays insights via dashboard
 
-## 📊 Sample Insights
-- Most in-demand skills
-- Salary distribution
-- Job location trends
+## 📊 Key Insights
+- Skill demand analysis
+- Salary trends
+- Location-wise hiring patterns
 
 ## ▶️ Run Locally
 ```bash
