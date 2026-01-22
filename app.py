@@ -74,3 +74,11 @@ st.bar_chart(skill_counts)
 location_counts = data["location"].value_counts()
 st.subheader("📍 Job Demand by Location")
 st.bar_chart(location_counts)
+
+#dashboard
+col1, col2, col3 = st.columns(3)
+
+col1.metric("Total Jobs", len(data))
+col2.metric("Avg Salary", int(data["salary"].mean()))
+col3.metric("Top Skill", skill_counts.idxmax())
+
