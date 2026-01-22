@@ -31,8 +31,12 @@ h1, h2, h3 {
 conn = sqlite3.connect("jobs.db")
 data = pd.read_sql("SELECT * FROM jobs", conn)
 conn.close()
-
-data["date"] = pd.to_datetime(data["date"])
+# ------------------ HANDLE DATE SAFELY ------------------
+if "date" in data.columns:
+    data["date"] = pd.to_datetime(data["date"])
+else:
+    # If date column doesn't exist, create it using today's date
+    data["date"] = pd.to_datetime("today")
 
 # ------------------ HEADER ------------------
 st.title("📊 Job Market Analytics Dashboard")
@@ -125,3 +129,4 @@ st.markdown(f"""
 # ------------------ FOOTER ------------------
 st.markdown("---")
 st.caption("Built with Python, SQL, Streamlit & GitHub Actions")
+
