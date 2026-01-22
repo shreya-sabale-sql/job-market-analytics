@@ -1,3 +1,5 @@
+
+
 import streamlit as st
 import pandas as pd
 import sqlite3
@@ -7,25 +9,33 @@ import matplotlib.pyplot as plt
 st.set_page_config(
     page_title="Job Market Analytics",
     layout="wide",
+    page_icon="📊"
 )
-
 # ------------------ STYLING ------------------
 st.markdown("""
 <style>
 body {
     background-color: #ffffff;
 }
+
 h1, h2, h3 {
     color: #0b1f3a;
 }
+
 .metric-box {
-    background-color: #f5f7fa;
-    padding: 15px;
-    border-radius: 8px;
+    background-color: #f4f6f9;
+    padding: 20px;
+    border-radius: 10px;
     text-align: center;
+    border-left: 6px solid #0b1f3a;
+}
+
+.section {
+    margin-top: 30px;
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 # ------------------ LOAD DATA ------------------
 conn = sqlite3.connect("jobs.db")
@@ -40,10 +50,11 @@ else:
 
 # ------------------ HEADER ------------------
 st.title("📊 Job Market Analytics Dashboard")
-st.markdown("""
-This dashboard analyzes **job market trends**, **salary distribution**,  
-and **skill demand** using automated data collection and SQL-based analytics.
-""")
+st.markdown("<h1>📊 Job Market Analytics Dashboard</h1>", unsafe_allow_html=True)
+st.write(
+    "Analyze job trends, salary patterns, and in-demand skills using real-time job data."
+)
+
 
 # ------------------ SIDEBAR FILTERS ------------------
 st.sidebar.header("🔍 Filter Data")
@@ -66,50 +77,81 @@ filtered = data[
 ]
 
 # ------------------ KPI METRICS ------------------
-st.subheader("📌 Key Metrics")
+st.markdown("## 📌 Key Metrics")
 
 col1, col2, col3 = st.columns(3)
 
-col1.metric("Total Jobs", len(filtered))
-col2.metric("Average Salary", f"₹{int(filtered['salary'].mean()):,}")
-col3.metric("Top Skill",
-             filtered["skills"]
-             .str.split(",")
-             .explode()
-             .value_counts()
-             .idxmax())
+with col1:
+    st.markdown(
+        f"""
+        <div class="metric-box">
+        <h3>Total Jobs</h3>
+        <h2>{len(filtered)}</h2>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+with col2:
+    st.markdown(
+        f"""
+        <div class="metric-box">
+        <h3>Average Salary</h3>
+        <h2>₹{int(filtered['salary'].mean()):,}</h2>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+with col3:
+    top_skill = (
+        filtered["skills"]
+        .str.split(",")
+        .explode()
+        .value_counts()
+        .idxmax()
+    )
+
+    st.markdown(
+        f"""
+        <div class="metric-box">
+        <h3>Top Skill</h3>
+        <h2>{top_skill}</h2>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 
 # ------------------ JOB TREND ------------------
-st.subheader("📈 Job Posting Trend")
+st.markdown("## 📈 Job Trends Over Time")
 
 trend = filtered.groupby("date").size()
-st.line_chart(trend)
+
+if len(trend) > 1:
+    st.line_chart(trend)
+else:
+    st.info("Not enough data yet to show trend.")
+
 
 # ------------------ SALARY ANALYSIS ------------------
-st.subheader("💰 Salary Analysis")
-
-salary_data = filtered["salary"]
-
-col1, col2, col3 = st.columns(3)
-col1.metric("Min Salary", f"₹{int(salary_data.min()):,}")
-col2.metric("Max Salary", f"₹{int(salary_data.max()):,}")
-col3.metric("Average Salary", f"₹{int(salary_data.mean()):,}")
+st.markdown("## 💰 Salary Distribution")
 
 fig, ax = plt.subplots()
-ax.hist(salary_data, bins=8, edgecolor="black")
+ax.hist(filtered["salary"], bins=8, color="#0b1f3a", edgecolor="white")
 ax.set_xlabel("Salary (INR)")
-ax.set_ylabel("Number of Jobs")
-ax.set_title("Salary Distribution")
+ax.set_ylabel("Job Count")
 
 st.pyplot(fig)
 
 # ------------------ SKILL DEMAND ------------------
-st.subheader("🧠 Skill Demand Analysis")
+st.markdown("## 🧠 Skill Demand")
 
 skills = filtered["skills"].str.split(",").explode()
 skill_counts = skills.value_counts()
 
 st.bar_chart(skill_counts)
+
 
 # ------------------ LOCATION ANALYSIS ------------------
 st.subheader("📍 Location-wise Job Demand")
@@ -117,16 +159,20 @@ location_counts = filtered["location"].value_counts()
 st.bar_chart(location_counts)
 
 # ------------------ INSIGHTS ------------------
-st.subheader("🧠 Key Insights")
+st.markdown("## 🧠 Key Insights")
 
-st.markdown(f"""
-• **Most demanded skill:** {skill_counts.idxmax()}  
-• **Highest hiring location:** {location_counts.idxmax()}  
-• **Salary range:** ₹{int(salary_data.min()):,} – ₹{int(salary_data.max()):,}  
-• **Data updated automatically via GitHub Actions**
-""")
+st.success(
+    f"""
+    ✔ Highest demand skill: {skill_counts.idxmax()}  
+    ✔ Highest paying location: {filtered['location'].value_counts().idxmax()}  
+    ✔ Salary range: ₹{int(filtered['salary'].min()):,} – ₹{int(filtered['salary'].max()):,}
+    """
+)
+
 
 # ------------------ FOOTER ------------------
 st.markdown("---")
-st.caption("Built with Python, SQL, Streamlit & GitHub Actions")
+st.caption("Built with Python, SQL, Streamlit & GitHub Actions | Data Analytics Project")
+
+
 
